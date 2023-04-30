@@ -2,30 +2,44 @@ pipeline{
  agent none
 
  stages {
-   stage('Checkstyle'){
-   	agent { //here we select only docker build agents
-        	docker {
-                    image 'maven:3.8.6-amazoncorretto-17' //container will start from this image
-                    args '-v /root/.m2:/root/.m2' //here you can map local maven repo, this let you to reuse local artifacts
-		    reuseNode true
-                }
-      }
-      steps{
-	sh 'mvn checkstyle:checkstyle'
-      }
-   }
-   stage('Test'){
-      	agent { //here we select only docker build agents
-        	docker {
-                    image 'maven:3.8.6-amazoncorretto-17' //container will start from this image
-                    args '-v /root/.m2:/root/.m2' //here you can map local maven repo, this let you to reuse local artifacts
-		    reuseNode true
-                }
+    stage('Checkstyle'){
+        agent { //here we select only docker build agents
+          docker {
+            image 'maven:3.8.6-amazoncorretto-17' //container will start from this image
+            args '-v /root/.m2:/root/.m2' //here you can map local maven repo, this let you to reuse local artifacts
+            reuseNode true
+          }
+        }
+        steps{
+          sh 'mvn checkstyle:checkstyle'
+        }
+    }
+
+    stage('Findbugs'){
+        agent { //here we select only docker build agents
+          docker {
+            image 'maven:3.8.6-amazoncorretto-17' //container will start from this image
+            args '-v /root/.m2:/root/.m2' //here you can map local maven repo, this let you to reuse local artifacts
+            reuseNode true
+          }
+        }
+        steps{
+          sh 'mvn findbugs:findbugs'
+        }
+    }
+
+    stage('Test'){
+      agent { //here we select only docker build agents
+        docker {
+          image 'maven:3.8.6-amazoncorretto-17' //container will start from this image
+          args '-v /root/.m2:/root/.m2' //here you can map local maven repo, this let you to reuse local artifacts
+		      reuseNode true
+        }
       }
       steps{
         sh 'mvn test'
       }
-   }
+    }
    
  }
 }
